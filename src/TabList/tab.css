@@ -1,0 +1,31 @@
+.tab{
+
+}
+.tabHeader{
+    width: 200px;
+    height: 30px;
+}
+.tabList{
+    width: calc(100%/3);
+    float: left;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+}
+.current{
+    background: #ff4400
+}
+
+.tabContent{
+    width: 200px;
+    min-height: 10px;
+    overflow: hidden;
+}
+.tabContentText{
+    display: none;
+}
+.active{
+    display: block;
+}
+
