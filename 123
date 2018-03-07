@@ -1,0 +1,864 @@
+import ACTION_TYPES from '../actionTypes';
+import {getFilterShowDate} from '../help/filterPanel';
+import {I18N, Global} from '../locales/index';
+import _ from 'lodash';
+const {
+  CHANGE_REPORT_DATA,
+  RETCODE_I18N_CHANGE,
+  SET_LEFT_TREE_SEARCH,
+  GET_TREE_LIST,
+  TREE_TYPE,
+  SHOW_GLOBAL_MESSAGE,
+  SET_SELECT_NODE,
+  DATA_LOADING,
+  SET_WK_CHANGE_STATUS, // center
+  SET_TIME_DIALOG_DISPLAY,
+  SET_FILTER_CONTENT_DISPLAY,
+  SET_SELECT_ITERMS,
+  SET_FILTER_CONDITION,
+  SET_EDIT_INPUT,
+  SET_SHOW_PANEL_STATUS,
+  UPDATE_TABLE,
+  SET_QUOTA_FILTER_DISPLAY,
+  SET_CHART_DATA,
+  SET_SETTINGS_DISPLAY,
+  SET_GROUP_TYPE,
+  DATA_SETS_LIST,
+  SELECT_PROPERTY_LIST
+} = ACTION_TYPES.customizedReport;
+
+export function displayLoading(display) {
+  return {
+    type: DATA_LOADING,
+    payload: display
+  };
+}
+
+export function changeReportData(payload) {
+  return {
+    type: CHANGE_REPORT_DATA,
+    payload,
+  };
+}
+
+export function i18nChange(data, locale) {
+  return {
+    type: RETCODE_I18N_CHANGE,
+    payload: {
+      [locale]: data
+    },
+  };
+}
+
+export function setLeftTreeSearch(data) {
+  return {
+    type: SET_LEFT_TREE_SEARCH,
+    payload: data
+  };
+}
+
+export function setSelectNode(data) {
+  return {
+    type: SET_SELECT_NODE,
+    payload: data
+  };
+}
+export function getTreeList(data) {
+  return {
+    type: GET_TREE_LIST,
+    payload: data
+  };
+}
+export function setTreeType(data) {
+  return {
+    type: TREE_TYPE,
+    payload: data
+  };
+}
+export function simpleShowGlobalMessage(options) {
+  return {
+    type: SHOW_GLOBAL_MESSAGE,
+    payload: options
+  };
+}
+
+export function showGlobalMessage(options) {
+  return ({dispatch}) => {
+    dispatch({
+      type: SHOW_GLOBAL_MESSAGE,
+      payload: {
+        ...options,
+        isShow: true
+      }
+    });
+    setTimeout(() => {
+      dispatch({
+        type: SHOW_GLOBAL_MESSAGE,
+        payload: {
+          ...options,
+          isShow: false
+        }
+      });
+    }, 2000);
+  };
+}
+
+export function getSelectNodeById(id) {
+  return ({dispatch, fetch}) => {
+    dispatch(displayLoading(true));
+    const url = `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/moreport/` + id;
+    fetch.get(url).then((res) => {
+      if (res.resultCode === 'OC.000000') {
+        res.resultData.moreport.state.worktable.aggs.aggDict ={
+      "1": {
+          "enabled": true,
+          "label": "区域",
+          "type": "groupby",
+          "params": {
+              "field": "dimensions.logicLoc.regionId",
+              "size": 10000,
+              "order": "desc",
+              "orderKey": "_term"
+          },
+          "aggType": {
+            "type": "dimensions",
+            "dataSetName": "stat-region-props",
+            "props": ["name","id"]
+          },
+          "dimGroup": {
+              "id": "logicLocGroup",
+              "zhCN": "逻辑位置",
+              "enUS": "Logic Location",
+              "level": 1
+          },
+          "enableHidden": false,
+          "isShow": true,
+          "schema": "segment"
+      },
+      "name": {
+        "enabled": true,
+        "label": "区域",
+        "params": {
+          "field": "dimensions.logicLoc.regionName"
+        },
+        "showType": "default"
+      },
+      "2": {
+          "enabled": true,
+          "label": "可用分区",
+          "type": "groupby",
+          "params": {
+              "field": "dimensions.logicLoc.azoneId",
+              "size": 10000,
+              "order": "desc",
+              "orderKey": "_term"
+          },
+          "aggType": {
+            "type": "dimensions",
+            "dataSetName": "stat-azone-props",
+            "props": []
+          },
+          "dimGroup": {
+              "id": "logicLocGroup",
+              "zhCN": "逻辑位置",
+              "enUS": "Logic Location",
+              "level": 2
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "schema": "segment"
+      },
+      "3": {
+          "enabled": true,
+          "label": "集群/主机组",
+          "type": "groupby",
+          "params": {
+              "field": "dimensions.logicLoc.clusterId",
+              "size": 10000,
+              "order": "desc",
+              "orderKey": "_term"
+          },
+          "aggType": {
+            "type": "dimensions",
+            "dataSetName": "stat-cluster-props",
+            "props": []
+          },
+          "dimGroup": {
+              "id": "logicLocGroup",
+              "zhCN": "逻辑位置",
+              "enUS": "Logic Location",
+              "level": 3
+          },
+          "enableHidden": true,
+          "isShow": false,
+          "schema": "segment"
+      },
+      "4": {
+          "enabled": false,
+          "label": "年",
+          "type": "groupby",
+          "params": {
+              "field": "dimensions.time.year",
+              "size": 10,
+              "order": "desc",
+              "orderKey": "_term"
+          },
+          "aggType": "dimensions",
+          "dimGroup": {
+            "id": "dateGroup",
+            "zhCN": "日期",
+            "enUS": "Date",
+            "level": 1
+          },
+          "enableHidden": false,
+          "isShow": true,
+          "schema": "segment"
+      },
+      "5": {
+          "enabled": false,
+          "label": "月",
+          "type": "groupby",
+          "params": {
+              "field": "dimensions.time.month",
+              "size": 12,
+              "order": "desc",
+              "orderKey": "_term"
+          },
+          "aggType": "dimensions",
+          "dimGroup": {
+            "id": "dateGroup",
+            "zhCN": "日期",
+            "enUS": "Date",
+            "level": 2
+          },
+          "enableHidden": false,
+          "isShow": true,
+          "schema": "segment"
+      },
+      "6": {
+          "enabled": false,
+          "label": "日",
+          "type": "groupby",
+          "params": {
+              "field": "dimensions.time.day",
+              "size": 31,
+              "order": "desc",
+              "orderKey": "_term"
+          },
+          "aggType": {
+            "type": "dimensions",
+            "dataSetName": "stat-region-props",
+            "props": ["name","id"]
+          },
+          "dimGroup": {
+            "id": "dateGroup",
+            "zhCN": "日期",
+            "enUS": "Date",
+            "level": 3
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "schema": "segment"
+      },
+      "7": {
+          "enabled": false,
+          "label": "vCPU总量(核)",
+          "type": "sum",
+          "params": {
+              "field": "metrics.vcpus"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "integer",
+          "schema": "metric"
+      },
+      "8": {
+          "enabled": false,
+          "label": "vCPU分配量(核)",
+          "type": "sum",
+          "params": {
+              "field": "metrics.vcpusUsed"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "integer",
+          "schema": "metric"
+      },
+      "9": {
+          "enabled": false,
+          "label": "vCPU剩余量(核)",
+          "type": "sum",
+          "params": {
+              "field": "metrics.vcpusLeft"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "integer",
+          "schema": "metric"
+      },
+      "10": {
+          "enabled": false,
+          "label": "vCPU分配率(%) ",
+          "type": "computing",
+          "params": {
+              "field": "metrics.vcpusRatio"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "schema": "metric"
+      },
+      "11": {
+          "enabled": false,
+          "label": "CPU平均使用率(%) ",
+          "type": "avg",
+          "params": {
+              "field": "metrics.cpuUsage"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "schema": "metric"
+      },
+      "12": {
+          "enabled": false,
+          "label": "内存总量(GB)",
+          "type": "sum",
+          "params": {
+              "field": "metrics.memoryMB"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "schema": "metric"
+      },
+      "13": {
+          "enabled": false,
+          "label": "内存分配量(GB)",
+          "type": "sum",
+          "params": {
+              "field": "metrics.memoryMBUsed"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "schema": "metric"
+      },
+      "14": {
+          "enabled": false,
+          "label": "内存剩余量(GB)",
+          "type": "sum",
+          "params": {
+              "field": "metrics.memoryMBLeft"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "schema": "metric"
+      },
+      "15": {
+          "enabled": false,
+          "label": "内存分配率(%)",
+          "type": "computing",
+          "params": {
+              "field": "metrics.memoryRatio"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "schema": "metric"
+      },
+      "16": {
+          "enabled": false,
+          "label": "内存平均使用率(%)",
+          "type": "avg",
+          "params": {
+              "field": "metrics.memoryUsage"
+          },
+          "enableHidden": true,
+          "isShow": true,
+          "metricType": "float",
+          "metricGroup": {
+            "id": "memoryUsage",
+            "level": 1
+          },
+          "schema": "metric"
+      },
+      "17": {
+        "enabled": false,
+        "label": "内存最大使用率(%)",
+        "type": "max",
+        "params": {
+            "field": "metrics.memoryUsage"
+        },
+        "enableHidden": true,
+        "isShow": true,
+        "metricType": "float",
+        "metricGroup": {
+          "id": "memoryUsage",
+          "level": 2
+        },
+        "schema": "metric"
+      }
+    }
+        dispatch(setSelectNode(res.resultData.moreport));
+        dispatch(setWkChangeStatus(res.resultData.moreport.showType));
+        dispatch(updateTable(res.resultData.moreport));
+        dispatch(getChartData(res.resultData.moreport));
+      } else {
+        dispatch(displayLoading(false));
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale].REPORT_QUERY_REPORT_FAILED,
+          type: 'error'
+        }));
+      }
+    }).catch((error) => {
+      console.log(error);
+      dispatch(displayLoading(false));
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_QUERY_REPORT_ERROR,
+        type: 'error'
+      }));
+    });
+  };
+}
+
+export function loadTreeList(param) {
+  const url = !!param.searchValue ? `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/moreports/${encodeURIComponent(param.searchValue)}` : `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/moreports`;
+  return ({dispatch, fetch}) => {
+    dispatch(displayLoading(true));
+    fetch.get(url).then((res) => {
+      if (res.resultCode === 'OC.000000') {
+        let firstNodeId = '';
+        let lastTypeOfNodeId = '';
+        const resData = res.resultData;
+        const treedata = [];
+        if (resData) {
+          resData.reportgroups.forEach((group, index) => {
+            const newGroup = {id: 'reportType' + index, text: group.reportgroup};
+            group.reports.forEach((item, num) => {
+              if (num === 0 && index === 0) {
+                firstNodeId = item.id;
+              }
+              if (!!param.type && group.reportgroup === param.type) {
+                lastTypeOfNodeId = group.reports[0].id;
+              }
+              item.text = item.title;
+              item.type = group.reportgroup;
+            });
+            newGroup.children = group.reports;
+            treedata.push(newGroup);
+          });
+        }
+        dispatch(displayLoading(false));
+        dispatch(getTreeList(treedata));
+        if (param.type !== 'refresh') {
+          if (!!lastTypeOfNodeId) {
+            dispatch(getSelectNodeById(lastTypeOfNodeId));
+          } else if (!lastTypeOfNodeId && !!firstNodeId) {
+            dispatch(getSelectNodeById(firstNodeId));
+          }
+        }
+      } else {
+        dispatch(displayLoading(false));
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale][res.resultCode] ? I18N[Global.locale][res.resultCode] : I18N[Global.locale].REPORT_QUERY_TREE_FAILED,
+          type: 'error'
+        }));
+      }
+    }).catch(function () {
+      dispatch(displayLoading(false));
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_QUERY_TREE_ERROR,
+        type: 'error'
+      }));
+    });
+  };
+}
+
+export function setChartData(data) {
+  return {
+    type: SET_CHART_DATA,
+    payload: data
+  };
+}
+
+const createDefaultHandsonTable = () => {
+  const handsontableData = [];
+  for (let i = 0; i < 24; i++) {
+    const array = [];
+    for (let j = 0; j < 8; j++) {
+      array.push('');
+    }
+    handsontableData.push(array);
+  }
+  return handsontableData;
+};
+
+export function updateTable(selectNode) {
+  return ({dispatch, fetch, getState}) => {
+    if (selectNode.showType === 'worktable' || getState().customizedReport.wkStatus === 'worktable') {
+      dispatch(displayLoading(true));
+    }
+    const url = `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/update`;
+    const moreport = _.cloneDeep(selectNode);
+    moreport.showType = 'worktable';
+    const body = {
+      moreport
+    };
+    fetch.post(url, null, {body}).then((res) => {
+      if (res.resultCode === 'OC.000000') {
+        if (res.resultData && res.resultData.handsonTable && (res.resultData.handsonTable.length > 0)) {
+          const columns = res.resultData.handsonTable[0];
+          const filterColor = getFilterShowDate(selectNode.state);
+          const fontsStyle = {};
+          let i = 0;
+          // eslint-disable-next-line no-restricted-syntax,guard-for-in
+          for (const key in columns) {
+            // eslint-disable-next-line no-loop-func
+            filterColor.forEach((rows) => {
+              rows.rows.forEach((data) => {
+                if (data.label === columns[key]) {
+                  if (data.styleType === 'metric') {
+                    fontsStyle[i] = {textAlign: 'right', label: data.label};
+                    i++;
+                  } else {
+                    fontsStyle[i] = {textAlign: 'left', label: data.label};
+                    i++;
+                  }
+                }
+              });
+            });
+          }
+          res.resultData.fontsStyle = fontsStyle;
+          dispatch({
+            type: UPDATE_TABLE,
+            payload: {'tableData': res.resultData, 'dataLoading': false}
+          });
+          if (res.resultData.overflow) {
+            dispatch(showGlobalMessage({
+              text: I18N[Global.locale].SHOW_TABLE_DATA_MORE_TIPS,
+              type: 'default'
+            }));
+          }
+        } else {
+          res.resultData.handsonTable = createDefaultHandsonTable();
+          dispatch({
+            type: UPDATE_TABLE,
+            payload: {'tableData': res.resultData, 'dataLoading': false}
+          });
+          dispatch(showGlobalMessage({
+            text: I18N[Global.locale].QUERY_DATA_NULL,
+            type: 'success'
+          }));
+        }
+      } else {
+        const resultData = {};
+        resultData.handsonTable = createDefaultHandsonTable();
+        resultData.mergeCells = [];
+        dispatch({
+          type: UPDATE_TABLE,
+          payload: {'tableData': resultData, 'dataLoading': false}
+        });
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale][res.resultCode] ? I18N[Global.locale][res.resultCode] : I18N[Global.locale].REPORT_QUERY_TABLE_FAILED,
+          type: 'error'
+        }));
+      }
+    }).catch((error) => {
+      console.log(error);
+      const resultData = {};
+      resultData.handsonTable = createDefaultHandsonTable();
+      resultData.mergeCells = [];
+      dispatch({
+        type: UPDATE_TABLE,
+        payload: {'tableData': resultData, 'dataLoading': false}
+      });
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_QUERY_TABLE_ERROR,
+        type: 'error'
+      }));
+    });
+  };
+}
+export function getChartData(selectNode) {
+  return ({dispatch, fetch, getState}) => {
+    if (selectNode.showType === 'chart' || getState().customizedReport.wkStatus === 'chart') {
+      dispatch(displayLoading(true));
+    }
+
+    if (selectNode.chartExist) {
+      const chart = selectNode.state.chart;
+      const { type, enableDataZoom, enableMark, splitByMetrics, splitType, enableLegend } = chart;
+      const response = {
+        cId: 'agile-reports-chart',
+        type,
+        sourceType: 'FORMATTED_DATA',
+        style: {
+          enableDataZoom,
+          enableLegend,
+          enableMark,
+          splitByMetrics,
+          splitType,
+          type
+        },
+        title: '',
+        description: selectNode.description
+      };
+
+      const url = `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/update`;
+      const moreport = _.cloneDeep(selectNode);
+      moreport.showType = 'chart';
+      const body = {
+        moreport
+      };
+      fetch.post(url, null, {body}).then((res) => {
+        if (res.resultCode === 'OC.000000') {
+          response.source = res.resultData.source;
+          dispatch(setChartData(response));
+        } else {
+          dispatch(displayLoading(false));
+          dispatch(setChartData(response));
+          dispatch(showGlobalMessage({
+            text: I18N[Global.locale].REPORT_QUERY_REPORT_FAILED,
+            type: 'error'
+          }));
+        }
+      }).catch(() => {
+        dispatch(setChartData(response));
+        dispatch(displayLoading(false));
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale].REPORT_QUERY_REPORT_FAILED,
+          type: 'error'
+        }));
+      });
+    }
+  };
+}
+export function exportReport(selectNode, reFuction) {
+  return ({dispatch, fetch}) => {
+    const url = `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/interim/moreport`;
+    const body = {
+      moreport: selectNode
+    };
+    fetch.post(url, null, {body}).then((res) => {
+      if (res.resultCode === 'OC.000000') {
+        reFuction(res.resultData.id);
+      } else {
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale].REPORT_EXPORT_REPORT_FAILED,
+          type: 'error'
+        }));
+      }
+    }).catch(() => {
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_EXPORT_REPORT_FAILED,
+        type: 'error'
+      }));
+    });
+  };
+}
+
+export function setUpdateTable(tableData) {
+  return {
+    type: UPDATE_TABLE,
+    payload: tableData
+  };
+}
+export function saveAsAReport(report, reFuction) {
+  const body = {
+    moreport: report
+  };
+  const url = `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/moreport`;
+  return ({dispatch, fetch}) => fetch.post(url, null, {body})
+    .then((res) => {
+      if (res.resultCode === 'OC.000000') {
+        reFuction(true, res.resultCode);
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale].REPORT_SAVE_AS_REPORT_SUCCESS,
+          type: 'success'
+        }));
+        const param = {
+          searchValue: '',
+          type: 'refresh'
+        };
+        dispatch(loadTreeList(param));
+      } else if (res.resultCode === 'OC.000003') {
+        reFuction(false, res.resultCode);
+      } else if (res.resultCode === 'OC.000004') {
+        reFuction(false, res.resultCode);
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale].REPORT_SAVE_AS_MORE_ERROR,
+          type: 'error'
+        }));
+      } else {
+        dispatch(showGlobalMessage({
+          text: I18N[Global.locale][res.resultCode] ? I18N[Global.locale][res.resultCode] : I18N[Global.locale].REPORT_SAVE_AS_REPORT_FAILED,
+          type: 'error'
+        }));
+      }
+    }).catch((error) => {
+      console.log(error);
+      reFuction(false, '');
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_SAVE_AS_REPORT_ERROR,
+        type: 'error'
+      }));
+    });
+}
+
+export function setFilterCondition(filterCondition) {
+  return {
+    type: SET_FILTER_CONDITION,
+    payload: filterCondition
+  };
+}
+export function getAllObjByType(param, qeury) {
+  const body = qeury;
+  const url = `${window.__globalAjaxURLPrefix__}/rest/moreportwebsite/v1/es/${param.dataset}/${param.dimensions}`;
+  return ({ dispatch, fetch}) => fetch.post(url, null, {body}).then((res) => {
+    if (res.resultCode === 'OC.000000') {
+      res.resultData.forEach((item, index) => {
+        res.resultData[index] = item + '';
+      });
+      if (param.content.length === 0) {
+        // eslint-disable-next-line object-shorthand
+        dispatch(setFilterCondition({all: res.resultData, param: param, resultData: res.resultData}));
+      } else {
+        // eslint-disable-next-line arrow-body-style
+        const newData = res.resultData.filter((item) => {
+          return param.content.indexOf(item) < 0;
+        });
+        dispatch(setFilterCondition({all: newData, param: param, resultData: res.resultData}));
+      }
+    } else {
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_QEURY_AVAILABLE_DATA_ERROR,
+        type: 'error'
+      }));
+    }
+  }).catch(() => {
+    dispatch(showGlobalMessage({
+      text: I18N[Global.locale].REPORT_QEURY_AVAILABLE_DATA_ERROR,
+      type: 'error'
+    }));
+  });
+}
+
+export function getDatasets() {
+  const url = `${window.__globalAjaxURLPrefix__}/rest/moatlaswebsite/v1/es/datasets`;
+  return [
+    {
+      "dataSetName": "stat-cloud-storage-pool",
+      "zhCN": "块存储池容量",
+      "enUS": "Storage pool capacity",
+      "relApp": ["stat-cloud-storage-pool"],
+      "timeAccuracy": ["30m","1d","1M","auto"],
+      "metrics": [],
+      "dimensions": []
+    },
+    {
+      "dataSetName": "stat-alarm-region",
+      "zhCN": "告警区域",
+      "enUS": "Alarm Region",
+      "relApp": ["stat-alarm-region"],
+      "timeAccuracy": ["30m","1d","1M","auto"],
+      "metrics": [],
+      "dimensions": []
+    } 
+  ]
+
+  /*
+  return ({ dispatch, fetch}) => fetch.get(url, null).then((res) => {
+    if (res.resultCode === 'OC.000000') {
+      res.resultData.forEach((item, index) => {
+        res.resultData[index] = item + '';
+      });
+      if (param.content.length === 0) {
+        // eslint-disable-next-line object-shorthand
+        dispatch(setFilterCondition({all: res.resultData, param: param, resultData: res.resultData}));
+      } else {
+        // eslint-disable-next-line arrow-body-style
+        const newData = res.resultData.filter((item) => {
+          return param.content.indexOf(item) < 0;
+        });
+        dispatch(setFilterCondition({all: newData, param: param, resultData: res.resultData}));
+      }
+    } else {
+      dispatch(showGlobalMessage({
+        text: I18N[Global.locale].REPORT_QEURY_AVAILABLE_DATA_ERROR,
+        type: 'error'
+      }));
+    }
+  }).catch(() => {
+    dispatch(showGlobalMessage({
+      text: I18N[Global.locale].REPORT_QEURY_AVAILABLE_DATA_ERROR,
+      type: 'error'
+    }));
+  });
+*/
+}
+
+export function setWkChangeStatus(status) {
+  return {
+    type: SET_WK_CHANGE_STATUS,
+    payload: status
+  };
+}
+export function setTimeDialogDisplay(timeDialogDisplay) {
+  return {
+    type: SET_TIME_DIALOG_DISPLAY,
+    payload: timeDialogDisplay
+  };
+}
+export function setFilterContentDisplay(filterContentDisplay) {
+  return {
+    type: SET_FILTER_CONTENT_DISPLAY,
+    payload: filterContentDisplay
+  };
+}
+export function setEditInput(inputDisplay) {
+  return {
+    type: SET_EDIT_INPUT,
+    payload: inputDisplay
+  };
+}
+export function setShowPanelStatus(status) {
+  return {
+    type: SET_SHOW_PANEL_STATUS,
+    payload: status
+  };
+}
+export function setSelectIterms(selectIterms) {
+  return {
+    type: SET_SELECT_ITERMS,
+    payload: selectIterms
+  };
+}
+export function setQuotaFilterDisplay(status) {
+  return {
+    type: SET_QUOTA_FILTER_DISPLAY,
+    payload: status
+  };
+}
+
+export function setSettingsDisplay(status) {
+  return {
+    type: SET_SETTINGS_DISPLAY,
+    payload: status
+  };
+}
+
+export function setGroupType(status) {
+  return {
+    type: SET_GROUP_TYPE,
+    payload: status
+  };
+}
+
+export function setPropertyList(status) {
+  return {
+    type: SELECT_PROPERTY_LIST,
+    payload: status
+  };
+}
