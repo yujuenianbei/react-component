@@ -1,0 +1,19 @@
+function postSecurityLog(req, logdata) {
+  const options = {
+    method: 'POST',
+    agent: req.app.get('config').IRAgent,
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+    },
+    body: logdata,
+  };
+  const prefix = req.app.get('config').IRPrefix;
+  const path = '/rest/plat/audit/v1/seculogs';
+  fetch(prefix + path, options)
+    .then(res => {
+      if (!res.ok) {
+        log.error(res.status, res.statusText);
+      }
+      return res.json();
+    });
+}
