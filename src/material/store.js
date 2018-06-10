@@ -2,7 +2,7 @@ import {createStore} from 'redux';
 import reducer from './reducer/reducer';
 
 const initValues = {
-    openLeftList: false,
+    openLeftList: true,
     openRightList: false
 };
 

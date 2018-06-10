@@ -12,6 +12,7 @@ class Left extends React.Component{
         return(
             <div>
                 <Drawer
+                containerStyle={{top:'50px'}}
                 docked={true}
                 width={200}
                 open={openLeftList}

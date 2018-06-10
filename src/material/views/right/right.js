@@ -14,6 +14,7 @@ class Right extends React.Component{
                 <Drawer
                 docked={true}
                 width={300}
+                containerStyle={{top:'50px'}}
                 openSecondary={true}
                 open={openRightList}
                 onRequestChange={onClose}

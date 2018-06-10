@@ -1,5 +1,6 @@
 import React from 'react';
 import HeaerTop from './header/header'
+import Content from './content/content'
 import Left from './left/left'
 import Right from './right/right'
 import { connect } from 'react-redux';
@@ -17,15 +18,12 @@ class Header extends React.Component {
     render() {
         return (
             <div>
-                <div className={`${this.props.openLeftList === true ? 'bodyLeftActive' : 'bodyLeftDefault'} ${this.props.openRightList === true ? 'bodyRightActive':'bodyRightDefault'}` }>
-                    <HeaerTop />
+                <HeaerTop />
+                <div className={`${this.props.openLeftList === true ? 'bodyLeftActive' : 'bodyLeftDefault'} ${this.props.openRightList === true ? 'bodyRightActive' : 'bodyRightDefault'}`}>
+                    <Content />
                 </div>
-                <div>
-                    <Left />
-                </div>
-                <div>
-                    <Right />
-                </div>
+                <Left />
+                <Right />
             </div>
 
         )

@@ -1,0 +1,44 @@
+ul,li{
+    list-style: none;
+}
+.outer{
+    height: 50px;
+    width: 40px;
+}
+.buttonContent{
+    background: #ccc;
+    width: 100px;
+    height: 50px;
+    position: relative;
+    opacity: 0;
+    -webkit-animation:  ease-in-out forwards;
+            animation:  ease-in-out forwards;
+    -webkit-animation-duration: 300ms;
+            animation-duration: 300ms;
+    -webkit-animation-delay: 0ms;
+            animation-delay: 0ms;
+}
+/* @-webkit-keyframes menu1 {
+    from {
+      opacity: 0;
+      -webkit-transform: rotateX(-180deg);
+              transform: rotateX(-180deg);
+    }
+    to {
+      opacity: 1;
+      -webkit-transform: rotateX(0deg);
+              transform: rotateX(0deg);
+    }
+  }
+  @keyframes menu1 {
+    from {
+      opacity: 0;
+      -webkit-transform: rotateX(-180deg);
+              transform: rotateX(-180deg);
+    }
+    to {
+      opacity: 1;
+      -webkit-transform: rotateX(0deg);
+              transform: rotateX(0deg);
+    }
+  } */
